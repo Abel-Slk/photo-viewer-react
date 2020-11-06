@@ -1,5 +1,20 @@
 import React from 'react'; 
 import { baseUrl } from '../shared/baseUrl';
+import { Card, CardImg, CardImgOverlay, CardTitle, CardSubtitle } from 'reactstrap';
+
+function RenderAlbum({ album }) { 
+    return (
+        <Card> 
+            <CardImg width="100%" src="https://via.placeholder.com/150/92c952" alt={album.title} />
+
+            <CardImgOverlay>
+                <CardTitle>Альбом №{album.id}</CardTitle>
+                <CardSubtitle>{album.title}</CardSubtitle>
+            </CardImgOverlay>
+        </Card>
+    );
+
+}
 
 class Albums extends React.Component {
 
@@ -11,7 +26,6 @@ class Albums extends React.Component {
     };
 
     this.fetchAlbums = this.fetchAlbums.bind(this);
-    
   }
 
   fetchAlbums() { 
@@ -31,8 +45,8 @@ class Albums extends React.Component {
         throw errmess;
     })
     .then(response => response.json())
-    .then(photos => {
-        return photos;
+    .then(albums => {
+        return albums;
     })
     .catch(error => console.log(error.message));
   }
@@ -43,27 +57,29 @@ class Albums extends React.Component {
     this.setState({ albums: albums }); 
   }
 
+
   render() {
-    let albumTitles =  this.state.albums.map(album => {
-        return album.title;
-    });
+    const albums = this.state.albums.map(album => {
+        return ( 
+            <div key={album.id} className="col-12 col-md-2 m-1">
+                <RenderAlbum album={album} />
+            </div> 
+        );
+    }); 
 
     return (
-      <div>
-        <h1>Альбомы</h1>
-
-        <div>
-          {albumTitles.map(title => {
-              return (
-                <div>
-                  <p>{title}</p>
+        <div className="container">
+            <div className="row">
+                <div className="col-12">
+                    <h1>Альбомы</h1>
+                    <hr />
                 </div>
-              );
-          })}
-        </div>
+            </div>
 
-        
-      </div>
+            <div className="row">
+                {albums}  
+            </div>
+        </div>
     );
   }
 }
