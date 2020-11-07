@@ -2,8 +2,8 @@ import React from 'react';
 import { baseUrl } from '../shared/baseUrl';
 import { Card, CardImg, CardImgOverlay, CardTitle, CardSubtitle } from 'reactstrap';
 
-function RenderAlbum({ album, albumPreview }) { 
-    if (!albumPreview) { // we shouldn't access albumPreview's properties like we're doing with albumPreview.url below before albumPreview gets filled with properties (in that case ex console.log(albumPreview) already works but console.log(albumPreview.url) still doesn't) - иначе приведет к ошибке Cannot read property 'url' of undefined. Заполнение произойдет не сразу - поэтому надо запустить этот код только после того как albumPreview заполнится свойствами
+function RenderAlbum({ album, albumCover }) { 
+    if (!albumCover) { // we shouldn't access albumCover's properties like we're doing with albumCover.url below before albumCover gets filled with properties (in that case ex console.log(albumCover) already works but console.log(albumCover.url) still doesn't) - иначе приведет к ошибке Cannot read property 'url' of undefined. Заполнение произойдет не сразу - поэтому надо запустить этот код только после того как albumCover заполнится свойствами
         return (
             <div className="container">
                 <div className="row">
@@ -14,7 +14,7 @@ function RenderAlbum({ album, albumPreview }) {
     }
     return (
         <Card> 
-            <CardImg width="100%" src={albumPreview.url} alt={album.title} />
+            <CardImg width="100%" src={albumCover.url} alt={album.title} />
 
             <CardImgOverlay>
                 <CardTitle>Альбом №{album.id}</CardTitle>
@@ -31,11 +31,11 @@ class Albums extends React.Component {
 
     this.state = { 
         albums: [], // здесь нужно инициализировать как пустой массив, а не null - чтобы при первом пробеге render() не возникло ошибки
-        albumPreviews: []
+        albumCovers: []
     };
 
     this.fetchAlbums = this.fetchAlbums.bind(this);
-    this.fetchAlbumPreviews = this.fetchAlbumPreviews.bind(this);
+    this.fetchAlbumCovers = this.fetchAlbumCovers.bind(this);
   }
 
   fetchAlbums() { 
@@ -59,7 +59,7 @@ class Albums extends React.Component {
     .catch(error => console.log(error.message));
   }
 
-  fetchAlbumPreviews() { 
+  fetchAlbumCovers() { 
     fetch(baseUrl + 'photos')
     .then(response => { 
         if (response.ok) {
@@ -90,14 +90,14 @@ class Albums extends React.Component {
         console.log('previewPhotos:')
         console.log(previewPhotos)
 
-        this.setState({ albumPreviews: previewPhotos });
+        this.setState({ albumCovers: previewPhotos });
     })
     .catch(error => console.log(error.message));
   }
 
   componentDidMount() {
     this.fetchAlbums(); 
-    this.fetchAlbumPreviews(); 
+    this.fetchAlbumCovers(); 
   }
 
   render() {
@@ -106,7 +106,7 @@ class Albums extends React.Component {
             <div key={album.id} className="col-12 col-md-2 m-1">
                 <RenderAlbum 
                     album={album}
-                    albumPreview={this.state.albumPreviews.filter(albumPreview => albumPreview.albumId == album.id)[0]}
+                    albumCover={this.state.albumCovers.filter(albumCover => albumCover.albumId == album.id)[0]}
                 />
             </div> 
         );
