@@ -2,10 +2,19 @@ import React from 'react';
 import { baseUrl } from '../shared/baseUrl';
 import { Card, CardImg, CardImgOverlay, CardTitle, CardSubtitle } from 'reactstrap';
 
-function RenderAlbum({ album }) { 
+function RenderAlbum({ album, albumPreview }) { 
+    if (!albumPreview) { // we shouldn't access albumPreview's properties like we're doing with albumPreview.url below before albumPreview gets filled with properties (in that case ex console.log(albumPreview) already works but console.log(albumPreview.url) still doesn't) - иначе приведет к ошибке Cannot read property 'url' of undefined. Заполнение произойдет не сразу - поэтому надо запустить этот код только после того как albumPreview заполнится свойствами
+        return (
+            <div className="container">
+                <div className="row">
+                    <div>Loading</div>
+                </div>
+            </div>
+        );
+    }
     return (
         <Card> 
-            <CardImg width="100%" src="https://via.placeholder.com/150/92c952" alt={album.title} />
+            <CardImg width="100%" src={albumPreview.url} alt={album.title} />
 
             <CardImgOverlay>
                 <CardTitle>Альбом №{album.id}</CardTitle>
@@ -81,11 +90,7 @@ class Albums extends React.Component {
         console.log('previewPhotos:')
         console.log(previewPhotos)
 
-        let previewPhotosUrls = previewPhotos.map(previewPhoto => previewPhoto.url)
-        console.log('previewPhotosUrls:')
-        console.log(previewPhotosUrls)
-
-        this.setState({ albumPreviews: previewPhotosUrls });
+        this.setState({ albumPreviews: previewPhotos });
     })
     .catch(error => console.log(error.message));
   }
@@ -99,7 +104,10 @@ class Albums extends React.Component {
     const albums = this.state.albums.map(album => {
         return ( 
             <div key={album.id} className="col-12 col-md-2 m-1">
-                <RenderAlbum album={album} />
+                <RenderAlbum 
+                    album={album}
+                    albumPreview={this.state.albumPreviews.filter(albumPreview => albumPreview.albumId == album.id)[0]}
+                />
             </div> 
         );
     }); 
