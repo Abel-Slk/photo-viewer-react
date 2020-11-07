@@ -13,7 +13,6 @@ function RenderAlbum({ album }) {
             </CardImgOverlay>
         </Card>
     );
-
 }
 
 class Albums extends React.Component {
@@ -22,14 +21,16 @@ class Albums extends React.Component {
     super(props);
 
     this.state = { 
-        albums: [] // здесь нужно инициализировать как пустой массив, а не null - чтобы при первом пробеге render() не возникло ошибки
+        albums: [], // здесь нужно инициализировать как пустой массив, а не null - чтобы при первом пробеге render() не возникло ошибки
+        albumPreviews: []
     };
 
     this.fetchAlbums = this.fetchAlbums.bind(this);
+    this.fetchAlbumPreviews = this.fetchAlbumPreviews.bind(this);
   }
 
   fetchAlbums() { 
-    return fetch(baseUrl + 'users/1/albums')
+    fetch(baseUrl + 'users/1/albums')
     .then(response => { 
         if (response.ok) {
             return response;
@@ -45,18 +46,54 @@ class Albums extends React.Component {
         throw errmess;
     })
     .then(response => response.json())
-    .then(albums => {
-        return albums;
+    .then(albums => this.setState({ albums: albums }))
+    .catch(error => console.log(error.message));
+  }
+
+  fetchAlbumPreviews() { 
+    fetch(baseUrl + 'photos')
+    .then(response => { 
+        if (response.ok) {
+            return response;
+        }
+        else {
+            let error = new Error('Error ' + response.status + ': ' + response.statusText);
+            error.response = response;
+            throw error;
+        }
+    },
+    error => {
+        let errmess = new Error(error.message); 
+        throw errmess;
+    })
+    .then(response => response.json())
+    .then(photos => {
+        // пользователю 1 принадлежат первые 10 альбомов из 100
+        let photosOfUser1 = photos.filter(photo => photo.albumId <= 10)
+        console.log('photos from the first 10 albums:')
+        console.log(photosOfUser1)
+
+        let previewPhotos = [];
+        let numOfPhotosInAlbum = 50;
+        for (let i = 0; i < photosOfUser1.length; i += numOfPhotosInAlbum) {
+            previewPhotos.push(photosOfUser1[i]); 
+        }
+        console.log('previewPhotos:')
+        console.log(previewPhotos)
+
+        let previewPhotosUrls = previewPhotos.map(previewPhoto => previewPhoto.url)
+        console.log('previewPhotosUrls:')
+        console.log(previewPhotosUrls)
+
+        this.setState({ albumPreviews: previewPhotosUrls });
     })
     .catch(error => console.log(error.message));
   }
 
-  async componentDidMount() {
-    let albums = await this.fetchAlbums(); // async/await здесь нужны чтобы дождаться присвоения значения albums. Без async/await возникнет проблема в render() с this.state.albums.map()
-    albums = JSON.parse(JSON.stringify(albums));
-    this.setState({ albums: albums }); 
+  componentDidMount() {
+    this.fetchAlbums(); 
+    this.fetchAlbumPreviews(); 
   }
-
 
   render() {
     const albums = this.state.albums.map(album => {
