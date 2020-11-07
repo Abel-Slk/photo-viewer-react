@@ -82,15 +82,15 @@ class Albums extends React.Component {
         console.log('photos from the first 10 albums:')
         console.log(photosOfUser1)
 
-        let previewPhotos = [];
+        let coverPhotos = [];
         let numOfPhotosInAlbum = 50;
         for (let i = 0; i < photosOfUser1.length; i += numOfPhotosInAlbum) {
-            previewPhotos.push(photosOfUser1[i]); 
+            coverPhotos.push(photosOfUser1[i]); 
         }
-        console.log('previewPhotos:')
-        console.log(previewPhotos)
+        console.log('coverPhotos:')
+        console.log(coverPhotos)
 
-        this.setState({ albumCovers: previewPhotos });
+        this.setState({ albumCovers: coverPhotos });
     })
     .catch(error => console.log(error.message));
   }
