@@ -1,9 +1,8 @@
 import React from 'react'; 
-import { Card, CardImg, CardImgOverlay, CardTitle, CardSubtitle } from 'reactstrap';
 import { Link } from 'react-router-dom';
 
 function RenderAlbum({ album, albumCover }) { 
-    if (!albumCover) { // we shouldn't access albumCover's properties like we're doing with albumCover.url below before albumCover gets filled with properties (in that case ex console.log(albumCover) already works but console.log(albumCover.url) still doesn't) - иначе приведет к ошибке Cannot read property 'url' of undefined. Заполнение произойдет не сразу - поэтому надо запустить этот код только после того как albumCover заполнится свойствами
+    if (!albumCover) { // shouldn't access albumCover's properties like albumCover.url below before albumCover gets filled with properties (in that case ex console.log(albumCover) already works but console.log(albumCover.url) still doesn't) - иначе приведет к ошибке Cannot read property 'url' of undefined. Заполнение произойдет не сразу - поэтому надо запустить этот код только после того как albumCover заполнится свойствами
         return (
             <div className="container">
                 <div className="row">
@@ -13,21 +12,22 @@ function RenderAlbum({ album, albumCover }) {
         );
     }
     return (
-        <Card> 
+        <div className="card">
             <Link to={`/albums/${album.id}`}>
-                <CardImg width="100%" src={albumCover.url} alt={album.title} />
 
-                <CardImgOverlay>
-                    <CardTitle>Альбом №{album.id}</CardTitle>
-                    <CardSubtitle>{album.title}</CardSubtitle>
-                </CardImgOverlay>
+                <img width="100%" src={albumCover.url} alt={album.title} />
+
+                <div class="card-img-overlay">
+                    <h5 class="card-title text-white">Альбом №{album.id}</h5>
+                    <p class="card-text text-warning font-weight-bold text-center">{album.title}</p>
+                </div>
+        
             </Link>
-        </Card>
+        </div>
     );
 }
 
 class Albums extends React.Component {
-
   
   render() {
     const albums = this.props.albums.map(album => {
@@ -45,12 +45,12 @@ class Albums extends React.Component {
         <div className="container">
             <div className="row">
                 <div className="col-12">
-                    <h1>Альбомы</h1>    
+                    <h1 className="title">Альбомы</h1>    
                     <hr />
                 </div>
             </div>
 
-            <div className="row">
+            <div className="row albums">
                 {albums}  
             </div>
         </div>

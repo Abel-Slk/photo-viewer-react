@@ -23,7 +23,7 @@ const AlbumContents = props => {
                         <BreadcrumbItem active>{props.album.title}</BreadcrumbItem>
                     </Breadcrumb>
                     
-                    <div className="col-12">
+                    <div className="col-12 title">
                         <h3>{props.album.title}</h3>
                         <hr />
                     </div>

@@ -4,7 +4,6 @@ import { Switch, Route, Redirect } from 'react-router-dom';
 import { baseUrl } from '../shared/baseUrl';
 import AlbumContents from './AlbumContents';
 
-
 class Main extends React.Component { 
     constructor(props) {
         super(props);

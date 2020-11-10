@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Caveat:wght@700&display=swap');
+
 @mixin bp($point) {
     @if $point == large {
       @media (min-width: 992px) { @content; }
@@ -26,6 +28,17 @@ body {
   background: #3c57d1;
   background: -webkit-linear-gradient(to right, #94cfff, #3c57d1);
   background: linear-gradient(to right, #bd95eb, #494cff);
+}
+
+.title {
+  font-family: 'Caveat', cursive;
+  font-size: 350%;
+  text-align: center;
+}
+
+.albums {
+  display: flex;
+  justify-content: center;
 }
 
 .gallery-container {
@@ -137,7 +150,6 @@ body {
 .modal-body {
   position: relative;
 }
-
 
 .card {
   box-shadow: 1px 3px 1px gray;
