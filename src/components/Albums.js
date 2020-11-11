@@ -1,8 +1,49 @@
 import React from 'react'; 
 import { Link } from 'react-router-dom';
+import { baseUrl } from '../shared/baseUrl';
 
-function RenderAlbum({ album, albumCover }) { 
-    if (!albumCover) { // shouldn't access albumCover's properties like albumCover.url below before albumCover gets filled with properties (in that case ex console.log(albumCover) already works but console.log(albumCover.url) still doesn't) - иначе приведет к ошибке Cannot read property 'url' of undefined. Заполнение произойдет не сразу - поэтому надо запустить этот код только после того как albumCover заполнится свойствами
+class RenderAlbum extends React.Component { 
+    constructor(props) {
+        super(props);
+    
+        this.state = {
+            albumPhotoCount: 0
+        }
+
+        this.fetchAlbumPhotoCount = this.fetchAlbumPhotoCount.bind(this);
+    }
+
+    fetchAlbumPhotoCount() { 
+        fetch(baseUrl + 'photos')
+        .then(response => { 
+            if (response.ok) {
+                return response;
+            }
+            else {
+                let error = new Error('Error ' + response.status + ': ' + response.statusText);
+                error.response = response;
+                throw error;
+            }
+        },
+        error => {
+            let errmess = new Error(error.message); 
+            throw errmess;
+        })
+        .then(response => response.json())
+        .then(photos => {
+          let albumPhotos = photos.filter(photo => photo.albumId === this.props.album.id)
+          let photoCount = albumPhotos.length;
+          this.setState({ albumPhotoCount: photoCount });
+        })
+        .catch(error => console.log(error.message));
+    }
+
+    componentDidMount() {
+        this.fetchAlbumPhotoCount();
+    }
+
+    render() {
+        if (!this.props.albumCover) { // shouldn't access albumCover's properties like albumCover.url below before albumCover gets filled with properties (in that case ex console.log(albumCover) already works but console.log(albumCover.url) still doesn't) - иначе приведет к ошибке Cannot read property 'url' of undefined. Заполнение произойдет не сразу - поэтому надо запустить этот код только после того как albumCover заполнится свойствами
         return (
             <div className="container">
                 <div className="row">
@@ -11,24 +52,40 @@ function RenderAlbum({ album, albumCover }) {
             </div>
         );
     }
+
     return (
         <div className="card">
-            <Link to={`/albums/${album.id}`}>
+            <Link to={`/albums/${this.props.album.id}`}>
 
-                <img width="100%" src={albumCover.url} alt={album.title} />
+                <img width="100%" src={this.props.albumCover.url} alt={this.props.album.title} />
 
-                <div class="card-img-overlay">
-                    <h5 class="card-title text-white">Альбом №{album.id}</h5>
-                    <p class="card-text text-warning font-weight-bold text-center">{album.title}</p>
+                <div className="card-img-overlay">
+                    <h5 className="card-title text-white">Альбом №{this.props.album.id}</h5>
+                    <p className="card-text text-warning font-weight-bold text-center">{this.props.album.title}</p>
+                </div>
+
+                <div className="card-footer">
+                <p className="card-text text-dark">{this.state.albumPhotoCount} photos</p>
                 </div>
         
             </Link>
         </div>
     );
 }
+    }
+    
 
 class Albums extends React.Component {
-  
+
+    constructor(props) {
+        super(props);
+
+        this.state = {
+            albumPhotoCount: 0
+        }
+    }
+
+   
   render() {
     const albums = this.props.albums.map(album => {
         return ( 
